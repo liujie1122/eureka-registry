@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: eureka-server
+server:
+  port: 10086  # 为了与后续要进行注册的服务区分，这里将服务注册中心的端口设置为 7000。
+
+#    日志信息
+logging:
+  file: ./log/eureka-server.log
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false  #表示是否将自己注册到 Eureka Server，默认为 true。
+    fetch-registry: false # 表示是否从 Eureka Server 获取注册信息，默认为 true。
+    service-url:
+#    设置与 Eureka Server 交互的地址，查询服务和注册服务都需要依赖这个地址。
+#  默认是 http://localhost:8761/eureka ；多个地址可使用英文逗号（,）分隔。
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+      enable-self-preservation: false #是否开启保护模式
+      use-read-only-response-cache: false #是否只从缓存中读取 readOnlyCacheMap
+      response-cache-update-interval-ms: 300000  #eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上，默认0
+      server.response-cache-auto-expiration-in-seconds: 30  #eureka server缓存readWriteCacheMap失效时间，这个只有在这个时间过去后缓存才会失效，失效前不会更新，过期后从registry重新读取注册服务信息，registry是一个ConcurrentHashMap。由于启用了evict其实就用不太上改这个配置了,默认180s
+      server.eviction-interval-timer-in-ms: 30000  #启用主动失效，并且每次主动失效检测间隔为30s，默认为0
